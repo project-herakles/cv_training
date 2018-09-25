@@ -1,4 +1,9 @@
 Week 9.24 assignment:
+/**
+This is question is a simulation of the situation: you already discovered several potential amour with the color feature of two light on the side of armour, and you want to know which two light are a representative of an armour that you want to shoot.
+**/
+
+Question:
 
 You have some pictures, and inside each picture, you have already discovered some potential targets in rectangle shape. You marked down the left upper corner (x,y) screen coordinate, as well as the screen height and width of each potential target. The rectangular targets need to be paired up. However, in each picture, you can only shoot for one paired target, so you want to shoot for the closest paired target you got.
 
@@ -33,4 +38,3 @@ output are the closest paired target you can find with their x,y,width and heigh
 
 Sample output:
 [(651,383,4,19),(676,383,4,20)]
-
