@@ -267,6 +267,7 @@ void print1DArray(double list[], int n){
     for(int i=0; i<n; i++){
         cout<< list[i]<<" | ";
     }
+    cout<<endl;
 }
 
 int findMaxIndex(double list[], int size){
@@ -303,9 +304,12 @@ int main()
     int rList1[numRectData][5]={0};//rList1 will store input.
 
     readRects(rList1, numRectData);
-
+    cout<<"Initial rList1:"<<endl;
+    printrList5(rList1, numRectData);
+    cout<<"---------------------------------------------------------------------"<<endl;
+    
     sortrList1(rList1, numRectData);
-    cout<<"single rList1 row zeroed!"<<endl;
+    cout<<"rList1'single rows eroed!"<<endl;
     printrList5(rList1, numRectData);
     cout<<"---------------------------------------------------------------------"<<endl;
 
