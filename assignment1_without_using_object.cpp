@@ -43,6 +43,9 @@ const int RATIO = 5;
 /** 9.30
     The sample output seems wrong. For [(651,383,4,19),(676,383,4,20)], the [interval, width, height]
     can either be [25, 4, 20] or [21, 4, 20], which does not match the setting [15, 2, 10]=[30, 4, 20].
+
+
+    The sample has been modified. On remaining point to be refined is the interval test.
 */
 
 int printrList5(int l[][5], int s){
@@ -228,7 +231,7 @@ int getrList2(int rList1[][5], int rList2[][4], int r1){
 
 int divideRound(int a, int b){
     double c= (double)a/(double)b;
-    if (c>= a/b+0.5){
+    if (c>= a/b+0.6){
         return a/b+1;
     }else{
         return a/b;
@@ -357,7 +360,6 @@ bool IntervalTest(int rList2[][4], int r){
     int x1=rList2[r][0];
     int h=rList2[r][3];
     int x2=rList2[r+1][0];
-    int w=rList2[r][2];
 
     int interval=x1-x2;
     if (interval<0) interval=-interval;
@@ -365,7 +367,7 @@ bool IntervalTest(int rList2[][4], int r){
     //now we get the distance between x1 and x2;
     //possibilities: 1. need to deduct the width? 2. need to check proportional interval?
 
-    return (divideRound(2*(interval-w), 3*h)==1);
+    return (   (2*interval /(3*h) )<=1.1 && 2*interval /(3*h)>=0.9);
 }
 
 int checkInterval(int rList2[][4], int size){
