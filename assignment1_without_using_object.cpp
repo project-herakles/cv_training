@@ -389,57 +389,57 @@ int main()
     int rList1[r1][5]={0};//rList1 will store input.
 
     readRects(rList1, r1);
-    cout<<"Initial rList1:"<<endl;
-    printrList5(rList1, r1);
-    cout<<"---------------------------------------------------------------------"<<endl;
+    //cout<<"Initial rList1:"<<endl;
+    //printrList5(rList1, r1);
+    //cout<<"---------------------------------------------------------------------"<<endl;
 
     int nProportionalRects=checkProportion1(rList1, r1);
-    //nProportionalRects is the number of proportioned rows/ number of rects detected in rList1 after checking for proportion.
-    cout<<"rList1 after checking proportion!"<<endl;
-    printrList5(rList1, r1);
-    cout<<"---------------------------------------------------------------------"<<endl;
+    //comment: nProportionalRects is the number of proportioned rows/ number of rects detected in rList1 after checking for proportion.
+    //cout<<"rList1 after checking proportion!"<<endl;
+    //printrList5(rList1, r1);
+    //cout<<"---------------------------------------------------------------------"<<endl;
 
 
     zerorList1(rList1, r1);
-    cout<<"rList1's single rows zeroed!"<<endl;
-    printrList5(rList1, r1);
-    cout<<"---------------------------------------------------------------------"<<endl;
+    //cout<<"rList1's single rows zeroed!"<<endl;
+    //printrList5(rList1, r1);
+    //cout<<"---------------------------------------------------------------------"<<endl;
 
 
 
     int nProportionalNonsingleRects=nonzeroRowNum(rList1, r1);
-    //nProportionalNonsingleRects1 is the number of nonzero rows in rList2 after eliminating single rectangles.
-    cout<<"nProportionalNonsingleRects: "<<nProportionalNonsingleRects<<endl;
+    //comment: nProportionalNonsingleRects1 is the number of nonzero rows in rList2 after eliminating single rectangles.
+    //cout<<"nProportionalNonsingleRects: "<<nProportionalNonsingleRects<<endl;
 
 
     if (nProportionalNonsingleRects>=2){
         int rListTemp[nProportionalNonsingleRects][5]={0};
         intorListTemp(rList1, rListTemp, r1, nProportionalNonsingleRects);
-        cout<<"rListTemp: "<<endl;
-        printrList5(rListTemp, nProportionalNonsingleRects);
+        //cout<<"rListTemp: "<<endl;
+        //printrList5(rListTemp, nProportionalNonsingleRects);
 
         int rList2[nProportionalNonsingleRects][4]={0};
 
 
         getrList2(rListTemp, rList2, nProportionalNonsingleRects);
-        cout<<"updated rList2!"<<endl;
-        printrList4(rList2,nProportionalNonsingleRects);
-        cout<<"---------------------------------------------------------------------"<<endl;
+        //cout<<"updated rList2!"<<endl;
+        //printrList4(rList2,nProportionalNonsingleRects);
+        //cout<<"---------------------------------------------------------------------"<<endl;
 
         int nProportionalNonsingleIntervalRects=checkInterval(rList2, nProportionalNonsingleRects);
         int rList3[nProportionalNonsingleIntervalRects][4]={0};
         getrList3(rList2, nProportionalNonsingleRects, rList3);
 
-        cout<<"Interval checked rlist3: "<<endl;
-        printrList4(rList3, nProportionalNonsingleIntervalRects);
+        //cout<<"Interval checked rlist3: "<<endl;
+        //printrList4(rList3, nProportionalNonsingleIntervalRects);
 
         int nPairs=nProportionalNonsingleIntervalRects/2;
-        //here we make distance a list of doubles, instead of integers
+        //comment: here we make distance a list of doubles, instead of integers
         double distance[nPairs]={0};
         getDistance(distance, nPairs, rList3);
-        cout<<"Distance list!"<<endl;
-        print1DArray(distance, nPairs);
-        cout<<"---------------------------------------------------------------------"<<endl;
+        //cout<<"Distance list!"<<endl;
+        //print1DArray(distance, nPairs);
+        //cout<<"---------------------------------------------------------------------"<<endl;
 
         int maxIndex=findMaxIndex(distance, nPairs);
         printPair(maxIndex, rList3);
