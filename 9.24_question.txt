@@ -17,7 +17,7 @@ input are in format:
 
 Sample input:
 16
-651 383 4 19
+646 383 4 19
 400 270 5 25
 764 242 6 29
 17 23 2 10
@@ -37,4 +37,4 @@ Sample input:
 output are the closest paired target you can find with their x,y,width and height. The format is not important as long as it can represent the pair (two rectangular target).
 
 Sample output:
-[(651,383,4,19),(676,383,4,20)]
+[(646,383,4,19),(676,383,4,20)]
