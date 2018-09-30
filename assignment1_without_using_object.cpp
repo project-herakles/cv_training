@@ -29,12 +29,20 @@ const int RATIO = 5;
     The reason to consider proportion of the width and height is that we might mistakenly recognize something which is not the light target. Thus we need to check
     the proportion to select the real targets.
     */
+
 /**
     Possible refinement:
 
     Should be noted that so far, our criteria for judging whether two rectangles are the same is based
     on checking the y coordinate. However, strictly speaking, the width and height should also be checked to see if they are nearly the same.
     More revision might be necessary.
+*/
+
+
+
+/** 9.30
+    The sample output seems wrong. For [(651,383,4,19),(676,383,4,20)], the [interval, width, height]
+    can either be [25, 4, 20] or [21, 4, 20], which does not match the setting [15, 2, 10]=[30, 4, 20].
 */
 
 int printrList5(int l[][5], int s){
@@ -77,7 +85,7 @@ int printrList4(int l[][4], int s){
     return 0;
 }
 
-int readNumRectData(){
+int readr1(){
     cout<<"Enter number of data you want to enter!"<<endl;
     int n=0;
     while(true){
@@ -115,8 +123,10 @@ int readRects(int l[][5], int n){
 int searchPair(int i, int rects1[][5], int nRow){
 
     int y=rects1[i][1];
+    int width=rects1[i][2];
+
     for (int j=i+1;j<nRow; j++ ){
-        if (rects1[j][4]==0 && rects1[j][1]==y){
+        if (rects1[j][4]==0 && rects1[j][1]==y && rects1[j][2]==width){
 
             rects1[j][4]=1;//easy to forget
             return j;
@@ -135,12 +145,12 @@ void zeroRow4(int r, int list[][4]){
         list[r][i]=0;
     }
 }
-int sortrList1(int rList1[][5], int nRow){
+int zerorList1(int rList1[][5], int nRow){
     /*
     This function will zero the single rectangles in rList1 and return the
     actual size of rList1 after cleaning.
 
-    We will copy those paired rectangles to another rList2 in another function. The
+    We will copy those remaining rectangles to another rList2 in another function. The
     reason behind is that we want to get the actual size of rList1 first so that
     when can create a rList2 with all entries occupied, instead of a rList2 with empty
     entries since it will be difficult to manage.
@@ -187,8 +197,8 @@ void updaterList2(int r1, int r2, int rList2[][4], int &m, int rList1[][5]){
 }
 int getrList2(int rList1[][5], int rList2[][4], int r1){
     /*
-    This function transfers zeroed rList1 into rList2 with paired rectangle
-    placed together. r1 is the # of rows in rList1 and r2 is the # of rows in rList2.
+    This function pair non-zero rows in rListTemp into rList2
+    placed together. r1 is the # of rows in rList1.
     */
 
     int m=0; //this m is used for update rList2
@@ -196,44 +206,72 @@ int getrList2(int rList1[][5], int rList2[][4], int r1){
     for (int i=0; i<r1; i++){
         rList1[i][4]=0;
     }
+    //previously you have set all rows'[4] to be 1 and you need to reset them back to
+    //0 so that you can do the marking again in this function
 
     for (int i=0; i<r1; i++){
-        int index=searchPair(i, rList1, r1);
-        /*here you will encounter a problem. Since in previous searchPair you have
-        already set all checked rows' [4] to be 1. This time no matching row will be found.
-        index will always be equal to -1. So we may firstly set all the 1 to 0 again beforehand.
-        */
-        if(index!=-1){
-            updaterList2(i, index, rList2, m, rList1);
+
+        if (rList1[i][4]==0){
+            int index=searchPair(i, rList1, r1);
+
+            if(index!=-1){
+                rList1[i][4]=1;
+                rList1[index][4]=1;
+                updaterList2(i, index, rList2, m, rList1);
+            }
+
         }
     }
 
     return 0;
 }
 
-int checkProportion(int rList2[][4], int n){
+int divideRound(int a, int b){
+    double c= (double)a/(double)b;
+    if (c>= a/b+0.5){
+        return a/b+1;
+    }else{
+        return a/b;
+    }
+}
+
+int checkProportion1(int rList1[][5], int n){
     /*
     This function will take rList2 and eliminate the rows that does not satisfy the proportion test.
     It will return the number or rows that pass the test.
     */
     int counter=n;
     for (int i=0; i<n; i++){
-        if (rList2[i][2]>0 && rList2[i][2]*RATIO+1>= rList2[i][3] && rList2[i][2]*RATIO-1<=rList2[i][3]){
+        int p=divideRound(rList1[i][3], rList1[i][2]);
+        if (rList1[i][2]>0 && p==5 ){
             //pass proportion test
         }else{
             //fail proportion test; Be careful that we should delete BOTH rows.
 
-            //Also, if that row to be deleted has been checked previously, then you just need to zero it;
-            //If the row to be zeroed is the next row, which you are going to check. You should be careful that since its x=0; y=0;
-            //then it will pass the proportion test and the counter will not be deducted. Thus you need to fix it.
-            //You can directly deduct 2 from counter and add 1 to i so that the next row will not be checked.
-            zeroRow4(i, rList2);
-            if (i%2==0){
-                zeroRow4(i+1, rList2);
-                i++;
-            }else{
-                zeroRow4(i-1, rList2);
-            }
+
+            zeroRow5(i, rList1);
+            counter-=2;
+        }
+    }
+    return counter;
+}
+
+int checkProportion2(int rList1[][5], int n){
+    /*
+    This function will take rList2 and eliminate the rows that does not satisfy the proportion test.
+    It will return the number or rows that pass the test.
+    */
+    int counter=n;
+    for (int i=0; i<n; i++){
+
+        if (rList1[i][2]>0 && rList1[i][3]<=rList1[i][2]*5+1 &&
+            rList1[i][3]>=rList1[i][2]*5-1){
+            //pass proportion test
+        }else{
+            //fail proportion test; Be careful that we should delete BOTH rows.
+
+
+            zeroRow5(i, rList1);
             counter-=2;
         }
     }
@@ -298,50 +336,114 @@ void printPair(int index, int rList3[][4]){
     }
     cout<<" }";
 }
+
+
+void intorListTemp(int rList1[][5], int rListTemp[][5], int r1, int rTemp){
+    int k=0;
+
+    for (int i=0; i<r1; i++){
+        if (rList1[i][0]!=0 || rList1[i][1]!=0 || rList1[i][2]!=0 || rList1[i][3]!=0){
+            for (int j=0; j<4; j++){
+                rListTemp[k][j]=rList1[i][j];
+            }
+            rListTemp[k][4]=0;
+            k++;
+        }
+    }
+
+}
+
+bool IntervalTest(int rList2[][4], int r){
+    int x1=rList2[r][0];
+    int h=rList2[r][3];
+    int x2=rList2[r+1][0];
+    int w=rList2[r][2];
+
+    int interval=x1-x2;
+    if (interval<0) interval=-interval;
+
+    //now we get the distance between x1 and x2;
+    //possibilities: 1. need to deduct the width? 2. need to check proportional interval?
+
+    return (divideRound(2*(interval-w), 3*h)==1);
+}
+
+int checkInterval(int rList2[][4], int size){
+    int m=size;
+    for (int i=0; i<size; i+=2){
+        if(!IntervalTest(rList2, i)){
+            zeroRow4(i, rList2);
+            zeroRow4(i+1, rList2);
+            m-=2;
+        }
+    }
+
+    return m;
+}
+
 int main()
 {
-    int numRectData=readNumRectData();
-    int rList1[numRectData][5]={0};//rList1 will store input.
+    int r1=readr1();
+    int rList1[r1][5]={0};//rList1 will store input.
 
-    readRects(rList1, numRectData);
+    readRects(rList1, r1);
     cout<<"Initial rList1:"<<endl;
-    printrList5(rList1, numRectData);
-    cout<<"---------------------------------------------------------------------"<<endl;
-    
-    sortrList1(rList1, numRectData);
-    cout<<"rList1'single rows eroed!"<<endl;
-    printrList5(rList1, numRectData);
+    printrList5(rList1, r1);
     cout<<"---------------------------------------------------------------------"<<endl;
 
-
-    int nzr=nonzeroRowNum(rList1, numRectData);//nzr1 is the number of nonzero rows in rList2 after eliminating single rectangles.
-    int rList2[nzr][4]={0};
-    getrList2(rList1, rList2, numRectData);
-    cout<<"updated rList2 without checking proportion!"<<endl;
-    printrList4(rList2,nzr);
+    int nProportionalRects=checkProportion1(rList1, r1);
+    //nProportionalRects is the number of proportioned rows/ number of rects detected in rList1 after checking for proportion.
+    cout<<"rList1 after checking proportion!"<<endl;
+    printrList5(rList1, r1);
     cout<<"---------------------------------------------------------------------"<<endl;
 
 
-    int nRects=checkProportion(rList2, nzr); //nRects is the number of nonzero rows/ number of non-single rects detected in rList2 after checking for proportion.
-    //since not good at using pointer, you have to separate detecting number of non-single rects and creating another rList3 in two functions.
-    int rList3[nRects][4]={0};
-    getrList3(rList2, nzr, rList3);
-    cout<<"rList3 after checking proportion!"<<endl;
-    printrList4(rList3, nRects);
+    zerorList1(rList1, r1);
+    cout<<"rList1's single rows zeroed!"<<endl;
+    printrList5(rList1, r1);
     cout<<"---------------------------------------------------------------------"<<endl;
 
 
 
-    int nPairs=nRects/2;
-    //here we make distance a list of doubles, instead of integers
-    double distance[nPairs]={0};
-    getDistance(distance, nPairs, rList3);
-    cout<<"Distance list!"<<endl;
-    print1DArray(distance, nPairs);
-    cout<<"---------------------------------------------------------------------"<<endl;
+    int nProportionalNonsingleRects=nonzeroRowNum(rList1, r1);
+    //nProportionalNonsingleRects1 is the number of nonzero rows in rList2 after eliminating single rectangles.
+    cout<<"nProportionalNonsingleRects: "<<nProportionalNonsingleRects<<endl;
 
-    int maxIndex=findMaxIndex(distance, nPairs);
-    printPair(maxIndex, rList3);
+
+    if (nProportionalNonsingleRects>=2){
+        int rListTemp[nProportionalNonsingleRects][5]={0};
+        intorListTemp(rList1, rListTemp, r1, nProportionalNonsingleRects);
+        cout<<"rListTemp: "<<endl;
+        printrList5(rListTemp, nProportionalNonsingleRects);
+
+        int rList2[nProportionalNonsingleRects][4]={0};
+
+
+        getrList2(rListTemp, rList2, nProportionalNonsingleRects);
+        cout<<"updated rList2!"<<endl;
+        printrList4(rList2,nProportionalNonsingleRects);
+        cout<<"---------------------------------------------------------------------"<<endl;
+
+        int nProportionalNonsingleIntervalRects=checkInterval(rList2, nProportionalNonsingleRects);
+        int rList3[nProportionalNonsingleIntervalRects][4]={0};
+        getrList3(rList2, nProportionalNonsingleRects, rList3);
+
+        cout<<"Interval checked rlist3: "<<endl;
+        printrList4(rList3, nProportionalNonsingleIntervalRects);
+
+        int nPairs=nProportionalNonsingleIntervalRects/2;
+        //here we make distance a list of doubles, instead of integers
+        double distance[nPairs]={0};
+        getDistance(distance, nPairs, rList3);
+        cout<<"Distance list!"<<endl;
+        print1DArray(distance, nPairs);
+        cout<<"---------------------------------------------------------------------"<<endl;
+
+        int maxIndex=findMaxIndex(distance, nPairs);
+        printPair(maxIndex, rList3);
+    }else{
+        cout<<"Less than two valid rectangles, no pair."<<endl;
+    }
 
     return 0;
 }
