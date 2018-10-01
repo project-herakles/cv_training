@@ -11,31 +11,31 @@ int main()
     cin >> n;
 
     rec a[n];
-    rec b[n]={0,0,0,0};
+    rec b1,b2;
 
+    int d=1000; //distance between two rectangles of the same size;
 
     for (int i=0; i<n; i++){
          a[i].setNumber();
     };
 
-    int counter=0;
-
     for (int i=0; i<n; i++){
-            if (a[i].width!=0) {
         for (int j=i+1; j<n; j++){
-            if (a[i].y == a[j].y && a[i].width == a[j].width && (a[i].height-a[j].height)<=2 && (a[i].height-a[j].height)>= -2){
 
-                b[counter]=a[i];
-                b[counter+1]=a[j];
-                a[j].width=0;
-                counter=counter+2;
+            if (judgeSize(a[i],a[j]) && d>=getDistance(a[i],a[j])){
+
+                d=getDistance(a[i],a[j])
+                b1=a[i];
+                b2=a[j];
+
             }
+            else continue;
         }
-            }
+
     }
 
-    b[0].getNumber();
-    b[1].getNumber();
+    b1.getNumber();
+    b2.getNumber();
 
     return 0;
 
@@ -43,44 +43,3 @@ int main()
 
 }
 
-//Week 9.24 assignment:
-/**
-This is question is a simulation of the situation: you already discovered several potential amour with the color feature of two light on the side of armour, and you want to know which two light are a representative of an armour that you want to shoot.
-**/
-
-/*
-Question:
-
-You have some pictures, and inside each picture, you have already discovered some potential targets in rectangle shape. You marked down the left upper corner (x,y) screen coordinate, as well as the screen height and width of each potential target. The rectangular targets need to be paired up. However, in each picture, you can only shoot for one paired target, so you want to shoot for the closest paired target you got.
-
-The paired target is a pair of same sized rectangle parallel to each other on the same vertical level on screen, and each one in pair is of fixed height and width, where height=10cm, and width = 2cm. The distance between each one in the pair is 15cm.
-
-Note: in the picture, there can be sometime the height and width are not perfectly proportional, you should round them to compare with the real target height width proportion.
-
-input are in format:
-1. the first line is number of potential target (n)
-2. in the following n lines, each line has four numbers representing "x y width height" of each potential rectangular target
-
-Sample input:
-16
-646 383 4 19
-400 270 5 25
-764 242 6 29
-17 23 2 10
-215 27 3 15
-538 324 5 25
-819 172 5 24
-125 500 6 29
-676 383 4 20
-80 569 6 30
-795 242 6 30
-192 27 3 16
-387 270 5 25
-857 172 10 25
-17 23 2 10
-261 487 4 20
-
-output are the closest paired target you can find with their x,y,width and height. The format is not important as long as it can represent the pair (two rectangular target).
-
-Sample output:
-[(646,383,4,19),(676,383,4,20)] */
