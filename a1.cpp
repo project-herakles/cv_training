@@ -1,7 +1,7 @@
 #include <iostream> 
 #include <cmath>
 #include <cstdlib>
-#include < algorithm>
+#include <algorithm>
 
 using namespace std;
 
@@ -59,10 +59,18 @@ int main(){
 			cout << b[1].x << b[1].y << b[1].width << b[1].height << endl;
 	if (pair > 1)
 	{ 
-		sort(b.area[0], b.area[pair * 2], descend);
+		int num = 0;
+		double max = b[num].area;
+		for (int i = 2; i < pair * 2; i = i + 2){
+			if (b[i].area > max){
+				max = b[i].area;
+				num = i;
+			}
+			
+		}
 		cout << "Target found:" << endl;
-		cout << b[0].x << b[0].y << b[0].width << b[0].height << endl;
-		cout << b[1].x << b[1].y << b[1].width << b[1].height << endl;
+		cout << b[num].x << b[num].y << b[num].width << b[num].height << endl;
+		cout << b[num + 1].x << b[num + 1].y << b[num + 1].width << b[num + 1].height << endl;
 	}
 	
 	return 0;
