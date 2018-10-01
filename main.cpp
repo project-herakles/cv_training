@@ -13,7 +13,7 @@ int main()
     rec a[n];
     rec b1,b2;
 
-    int d=1000; //distance between two rectangles of the same size;
+    int d=1000; //setting initial distance between two rectangles as a large number;
 
     for (int i=0; i<n; i++){
          a[i].setNumber();
