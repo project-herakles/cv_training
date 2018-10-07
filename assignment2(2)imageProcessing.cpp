@@ -26,12 +26,11 @@ const char* trackbar_value = "Value";
 
 static void Threshold_Demo( int, void* )
 {
-    /* 0: Binary
-     1: Binary Inverted
-     2: Threshold Truncated
-     3: Threshold to Zero
-     4: Threshold to Zero Inverted
-    */
+     //0: Binary
+     //1: Binary Inverted
+     //2: Threshold Truncated
+     //3: Threshold to Zero
+     //4: Threshold to Zero Inverted
     
     threshold( src_gray, dst, threshold_value, max_binary_value, threshold_type );
     if (dst.size().width>0 && dst.size().height>0 ){
