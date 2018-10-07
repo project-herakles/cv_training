@@ -42,9 +42,13 @@ int main() {
     cout << "number of parent contour1 detected" << "using threshold " << THRESHOLD_1 << ": " <<  contour1.size() << endl;
     cout << "number of parent contour2 detected" << "using threshold " << THRESHOLD_2 << ": " <<  contour2.size() << endl;
 
-        /*	for (int i = 0; i < contour.size(); i++) {
-		drawContours(image_processed, contour, i, Scalar(0, 0, 255), 3, 8, hierarchy, 0, Point());
-	}*/
+    for (int i = 0; i < contour1.size(); i++) {
+		drawContours(image[0], contour1, i, Scalar(0, 0, 255), 1.5, 8, hierarchy1, 0, Point());
+	}
+    for (int i = 0; i < contour2.size(); i++) {
+		drawContours(image[1], contour2, i, Scalar(0, 0, 255), 1.5, 8, hierarchy2, 0, Point());
+	}
+
 	for(int i = 0; i < 2; i++){
         original_window_title = "Original image" + to_string(i);
 	    processed_window_title = "Processed image" + to_string(i);
