@@ -9,7 +9,8 @@ int main(int argc, char** argv){
     cout << "Major version:" << CV_MAJOR_VERSION << endl;
     cout << "Minor version:" << CV_MINOR_VERSION << endl;
     cout << "Subminor version:" << CV_SUBMINOR_VERSION << endl;
-
+    Mat example;
+    example = imread("Rune1.jpg", 1);
     char x = cin.get();
     return 0;
 }
