@@ -29,14 +29,17 @@ int main() {
 	// First convert it into grayscale picture
     for(int i = 0; i < 2; i++){ 
         cvtColor(image_copied[i], image_gray[i], CV_BGR2GRAY);
-	    // then do thresholding to convert in into a binary picture
-	    threshold(image_gray[i], image_processed[i], 200, 200, THRESH_BINARY);
     }
     
+	// then do thresholding to convert in into a binary picture separately
+	threshold(image_gray[0], image_processed[0], 180, 255, THRESH_BINARY);
+    threshold(image_gray[1], image_processed[1], 220, 255, THRESH_BINARY);
     // Finding contour, contours mean a closed curve
     findContours(image_processed[0], contour1, hierarchy1, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+    findContours(image_processed[1], contour2, hierarchy2, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     cout << "number of parent contours1 detected:" << contour1.size() << endl;
-/*	for (int i = 0; i < contour.size(); i++) {
+    cout << "number of parent contour2 detected:" << contour2.size() << endl;
+    /*	for (int i = 0; i < contour.size(); i++) {
 		drawContours(image_processed, contour, i, Scalar(0, 0, 255), 3, 8, hierarchy, 0, Point());
 	}*/
 	for(int i = 0; i < 2; i++){
