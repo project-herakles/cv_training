@@ -9,8 +9,44 @@ using namespace cv;
 const int THRESHOLD_1 = 197;
 const int THRESHOLD_2 = 212;
 
-int main() {
+void window_printing(int index, Mat image, Mat image_processed){
 	string original_window_title, processed_window_title;   
+    original_window_title = "Original image " + to_string(index);
+    processed_window_title = "Processed image " + to_string(index);
+    namedWindow(original_window_title, WINDOW_AUTOSIZE);
+    namedWindow(processed_window_title, WINDOW_AUTOSIZE);
+    imshow(original_window_title, image);
+    imshow(processed_window_title, image_processed);
+}
+
+void print_all_contour_location(vector<vector<Point>> contour){
+    int index = 0;
+    for(vector<vector<Point>>::iterator it = contour.begin(); it != contour.end(); it++, index++){
+        cout << "contour " << index << "(" <<  (*it)[0].x << " ," << (*it)[0].y << "), number of points:" << (*it).size() << endl;
+    }
+}
+
+void draw_all_contours(Mat image, vector<vector<Point>> contour, vector<Vec4i> hierarchy, Scalar color, double thickness){
+    for (int i = 0; i < contour.size(); i++) {
+		drawContours(image, contour, i, color, thickness, 8, hierarchy, 0, Point());
+	}
+}
+
+vector<vector<Point>> contour_filtering_for_rectangle(vector<vector<Point>> contour, int minimum_number_of_point, double height_to_width_scale, double percentage_error){
+    //filter for the useless small porint first
+    for (vector<vector<Point>>::iterator it = contour.begin(); it != contour.end();){
+        if ((*it).size() < minimum_number_of_point){
+            cout << "erased " << (*it)[0].x << "," << (*it)[0].y << " with size " << (*it).size() << endl;
+            it = contour.erase(it);
+            
+        }
+        else ++it;
+        
+    }
+    cout << "finsihed";
+    return contour;
+} 
+int main() {
     Mat image[2], image_copied[2],  image_gray[2];
 	Mat image_processed[2];
     vector<vector<Point>> contour1, contour2;
@@ -41,21 +77,14 @@ int main() {
     findContours(image_processed[1], contour2, hierarchy2, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     cout << "number of parent contour1 detected" << "using threshold " << THRESHOLD_1 << ": " <<  contour1.size() << endl;
     cout << "number of parent contour2 detected" << "using threshold " << THRESHOLD_2 << ": " <<  contour2.size() << endl;
-
-    for (int i = 0; i < contour1.size(); i++) {
-		drawContours(image[0], contour1, i, Scalar(0, 0, 255), 1.5, 8, hierarchy1, 0, Point());
-	}
-    for (int i = 0; i < contour2.size(); i++) {
-		drawContours(image[1], contour2, i, Scalar(0, 0, 255), 1.5, 8, hierarchy2, 0, Point());
-	}
-
-	for(int i = 0; i < 2; i++){
-        original_window_title = "Original image" + to_string(i);
-	    processed_window_title = "Processed image" + to_string(i);
-        namedWindow(original_window_title, WINDOW_AUTOSIZE);
-	    namedWindow(processed_window_title, WINDOW_AUTOSIZE);
-	    imshow(original_window_title, image[i]);
-	    imshow(processed_window_title, image_processed[i]);
+    print_all_contour_location(contour2);
+    contour2 = contour_filtering_for_rectangle(contour2, 10, 0.2, 0.1);
+    print_all_contour_location(contour2); 
+    draw_all_contours(image_copied[0], contour1, hierarchy1, (0, 0, 255), 2);
+    draw_all_contours(image_copied[1], contour2, hierarchy2, (0, 0, 255), 2);
+    for (int i = 0; i < 2; i++){
+        image_processed[i] = image_copied[i];
+        window_printing(i, image[i], image_processed[i]);
     }
 
 	//imwrite("Rune1_processed_binary.jpg", image_processed);
