@@ -6,8 +6,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 using namespace std;
 using namespace cv;
-const int THRESHOLD_1 = 200;
-const int THRESHOLD_2 = 205;
+const int THRESHOLD_1 = 197;
+const int THRESHOLD_2 = 212;
 
 int main() {
 	string original_window_title, processed_window_title;   
@@ -33,15 +33,16 @@ int main() {
         cvtColor(image_copied[i], image_gray[i], CV_BGR2GRAY);
     }
     
-	// then do thresholding to convert in into a binary picture separately
-	threshold(image_gray[0], image_processed[0], THRESHOLD_1, 150, THRESH_BINARY);
+// then do thresholding to convert in into a binary picture separately
+    threshold(image_gray[0], image_processed[0], THRESHOLD_1, 255, THRESH_BINARY);
     threshold(image_gray[1], image_processed[1], THRESHOLD_2, 255, THRESH_BINARY);
     // Finding contour, contours mean a closed curve
     findContours(image_processed[0], contour1, hierarchy1, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     findContours(image_processed[1], contour2, hierarchy2, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
-    cout << "number of parent contour1 detected" << "using threshold" << THRESHOLD_1 << ": " <<  contour1.size() << endl;
-    cout << "number of parent contour2 detected" << "using threshold" << THRESHOLD_2 << ": " <<  contour2.size() << endl;
-    /*	for (int i = 0; i < contour.size(); i++) {
+    cout << "number of parent contour1 detected" << "using threshold " << THRESHOLD_1 << ": " <<  contour1.size() << endl;
+    cout << "number of parent contour2 detected" << "using threshold " << THRESHOLD_2 << ": " <<  contour2.size() << endl;
+
+        /*	for (int i = 0; i < contour.size(); i++) {
 		drawContours(image_processed, contour, i, Scalar(0, 0, 255), 3, 8, hierarchy, 0, Point());
 	}*/
 	for(int i = 0; i < 2; i++){
