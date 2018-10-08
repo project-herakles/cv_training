@@ -10,8 +10,12 @@ using namespace std;
 using namespace cv;
 
 vector<vector<Point>> contour_filtering(vector<vector<Point>> contour, pair<int, int> conut, double height_to_width_ratio, double percentage_error);
+
 Mat image_binary_processing(Mat image, int thres);
+
 bool sort_by_size(pair<int, int> const& lhs, pair<int, int> const& rhs);
+
+vector<Mat> image_cropping(vector<vector<Point>> contour, int num); 
 
 int main(){
     VideoCapture cap("10.1_Assignment_video_clip.mp4");
@@ -40,12 +44,13 @@ int main(){
         image_binary = image_binary_processing(image_copied, 210);
         findContours(image_binary, contour, hierarchy,  CV_RETR_EXTERNAL,CV_CHAIN_APPROX_SIMPLE, Point(0,0));
        
-        //draw contour
+        //draw contour without processing
         for (int i = 0; i < contour.size(); i++){
             drawContours(image_copied, contour, i, Scalar(0, 0,255), 3, LINE_8, hierarchy, 0, Point());
         }
         contour = contour_filtering(contour, make_pair(10, 220), 1.5, 0.3);
-        
+        image_cropping(contour, 9);
+        //draw contour after filtering
         for (int i = 0; i < contour.size(); i++){
             drawContours(image_copied, contour, i, Scalar(0, 255, 0), 3, LINE_8, hierarchy, 0, Point());
         }
@@ -80,7 +85,7 @@ Mat image_binary_processing(Mat image, int thres){
 }
 
 vector<vector<Point>> contour_filtering(vector<vector<Point>> contour, pair<int, int> count, double height_to_width_ratio, double percentage_error){
-   //filter for the useless small porint first
+   // 1. filter for the useless small porint first
     int index = 0;
     vector<pair<int ,int>> mapping_sizeToIndex;
     vector<vector<Point>> filtered_contour;
@@ -106,8 +111,8 @@ vector<vector<Point>> contour_filtering(vector<vector<Point>> contour, pair<int,
     }
         
     
-    //cout << "passed first filtering";  
-    // after erasing the invalid count, try to calculate its dimension, size and ratio
+    // cout << "passed first filtering";  
+    // 2. after erasing the invalid count, try to calculate its dimension, size and ratio
     index = 0;
     for (vector<vector<Point>>::iterator it = contour.begin(); it != contour.end(); index++, ++it){       
         Rect rect = boundingRect((*it));
@@ -135,6 +140,17 @@ vector<vector<Point>> contour_filtering(vector<vector<Point>> contour, pair<int,
 
     cout << "finsihed";
     return filtered_contour;
+}
+
+vector<Mat> image_cropping(vector<vector<Point>> contour, int num){
+    vector<Mat> img;
+    for (int i = 0; i < num; i++){
+        Rect rect = boundingRect(contour[i]);
+        Rect myROI = (rect.tl().x , rect.br().y, rect.width, rect.height);
+        //img.push_back(rect(myROI));
+
+    }
+    return img;
 }
 
 bool sort_by_size(pair<int, int> const& lhs, pair<int, int> const& rhs){
