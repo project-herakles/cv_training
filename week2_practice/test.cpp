@@ -2,6 +2,7 @@
 #include<opencv2/opencv.hpp>
 #include<iostream>
 #include<curses.h>           // may have to modify this line if not using Windows
+#include<algorithm>
 #define CV_BGR2GRAY cv::COLOR_BGRA2GRAY
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 using namespace std;
@@ -19,6 +20,7 @@ void window_printing(int index, Mat image, Mat image_processed){
     imshow(processed_window_title, image_processed);
 }
 
+
 void print_all_contour_location(vector<vector<Point>> contour){
     int index = 0;
     for(vector<vector<Point>>::iterator it = contour.begin(); it != contour.end(); it++, index++){
@@ -32,15 +34,40 @@ void draw_all_contours(Mat image, vector<vector<Point>> contour, vector<Vec4i> h
 	}
 }
 
-vector<vector<Point>> contour_filtering_for_rectangle(vector<vector<Point>> contour, int minimum_number_of_point, double height_to_width_scale, double percentage_error){
+vector<vector<Point>> contour_filtering_for_rectangle(vector<vector<Point>> contour, int minimum_number_of_point, double height_to_width_scale_threshold, double percentage_error){
     //filter for the useless small porint first
-    for (vector<vector<Point>>::iterator it = contour.begin(); it != contour.end();){
+    int index = 0;
+    for (vector<vector<Point>>::iterator it = contour.begin(); it != contour.end(); index++){
+        // cout << "contour " << index << "(" <<  (*it)[0].x << " ," << (*it)[0].y << "), number of points:" << (*it).size() << endl;
         if ((*it).size() < minimum_number_of_point){
-            cout << "erased " << (*it)[0].x << "," << (*it)[0].y << " with size " << (*it).size() << endl;
+            /*cout << "erased " << endl;*/
             it = contour.erase(it);
             
         }
-        else ++it;
+        else{
+           
+            //try to calculate its dimension and ratio
+            Rect rect = boundingRect((*it));
+            
+            Point top_left_corner = rect.tl();
+            Point buttom_right_corner = rect.br() - Point(1, 1);
+            
+            cout << "(" << top_left_corner.x << ',' << top_left_corner.y << ") (" << buttom_right_corner.x << ", " << buttom_right_corner.y << ")" << endl;
+            double rect_length = buttom_right_corner.x - top_left_corner.x;
+            double rect_width = buttom_right_corner.y - top_left_corner.y;
+            double actual_height_to_width_scale = rect_length/rect_width;
+            double error = abs(actual_height_to_width_scale - height_to_width_scale_threshold)/ height_to_width_scale_threshold;
+                
+            cout << "length:" << rect_length << " width:" << rect_width << endl;
+            if(error > percentage_error){
+                cout << "exceed the ratio, rejected with ratio"<< round(rect_length/rect_width) <<  endl;
+                it = contour.erase(it);
+            }
+            else{
+                ++it;
+                cout << "qualifed" << endl;
+            } 
+        }
         
     }
     cout << "finsihed";
@@ -77,9 +104,8 @@ int main() {
     findContours(image_processed[1], contour2, hierarchy2, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
     cout << "number of parent contour1 detected" << "using threshold " << THRESHOLD_1 << ": " <<  contour1.size() << endl;
     cout << "number of parent contour2 detected" << "using threshold " << THRESHOLD_2 << ": " <<  contour2.size() << endl;
-    print_all_contour_location(contour2);
-    contour2 = contour_filtering_for_rectangle(contour2, 10, 0.2, 0.1);
-    print_all_contour_location(contour2); 
+    contour1 = contour_filtering_for_rectangle(contour1, 10, 2, 0.5);
+    contour2 = contour_filtering_for_rectangle(contour2, 10, 2, 0.5);
     draw_all_contours(image_copied[0], contour1, hierarchy1, (0, 0, 255), 2);
     draw_all_contours(image_copied[1], contour2, hierarchy2, (0, 0, 255), 2);
     for (int i = 0; i < 2; i++){
