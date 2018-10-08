@@ -20,7 +20,7 @@ int main(int argc, char** argv )
     Mat grayImage,binaryImage;
     cvtColor(copyImage, grayImage, COLOR_RGB2GRAY); //convert to a grayscale image (only by light)
     // what is threshold value and max?????????
-    threshold(grayImage, binaryImage,1,128,THRESH_BINARY);
+    threshold(grayImage, binaryImage,100,255,THRESH_BINARY); //works better
     
     int length= copyName.length();
     string binaryName = copyName.substr(0,length-9) + "binary.jpg";
