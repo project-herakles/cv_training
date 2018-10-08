@@ -1,0 +1,11 @@
+Week 10.1 assignment:
+
+Question:
+
+From Monday practice of getting 9 squares out of the image, we believe you have a little taste of how image processing works with OpenCV.
+ 
+In this assignment, you are going to take in a video instead of a jpg image, and try to crop the nine squares as precise as possible out of frames of video, and show them in 9 seperate windows. While your program is running, there should be 10 windows in total, in which 9 of them are the correponding 9 squares cut from each frame, and the other one shows the original video. (The video is called "10.1_Assignment_video_clip")
+
+This task needs the techniques of reading the video, display the frame of a video, possibly, you will also need to use perspective transformation, and all the functions you saw on Monday learning pdf resource. Please make sure you finish the tasks on the Monday pdf first, and start using Ubuntu from this week :P.
+
+(p.s. Google, blogs, stackoverflow is always our good friends, and the parameters really takes patience to adjust, so if you cannot do it to optimal, please at least show us that you have tried! Ans please don't wait until you finish all the code then push them to your branch, no matter what code you have written, as long as you think it is correct, please push it to your own branch so we can know your process~)
