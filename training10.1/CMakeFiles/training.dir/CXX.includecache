@@ -11,6 +11,8 @@ opencv2/opencv.hpp
 /home/neoys97/cv_training/training10.1/opencv2/opencv.hpp
 iostream
 -
+string
+-
 
 /usr/local/include/opencv/cxcore.h
 opencv2/core/core_c.h
