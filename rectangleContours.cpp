@@ -54,6 +54,7 @@ for (size_t i=0; i<boundRect.size();i++){ //search all rectangles
           }
       }
   }
+  }
 }
   
 for (size_t i=0; i<contours.size();i++)
