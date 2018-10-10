@@ -5,6 +5,8 @@
 using namespace cv;
 using namespace std;
 
+bool compareX (Rect, Rect);
+bool compareY (Rect, Rect);
 int main(int argc, char** argv){
 
 Mat src;
@@ -39,14 +41,14 @@ for (size_t i=0; i<boundRect.size();i++){ //search all rectangles
     int count2 = 0;
     for (size_t j=0;j<boundRect.size();j++){
       Rect rect2 = boundRect[j];
-      if (rect2.x == rect.x && rect2.area() == rect.area() )
+      if (compareX(rect,rect2) )
         count2 ++;
     } 
     if (count2 >= 3){ //means rect is a potential target
       int count3 =0;
       for (size_t k=0;k<boundRect.size();k++){
           Rect rect3= boundRect[k];
-          if (rect3.y == rect.y && rect3.area() == rect.area() )
+          if (compareY(rect,rect3))
             count3 ++;
           if (count3 >=3){ //means rect is the target
              count++;
@@ -64,4 +66,16 @@ imshow("window", src);
 waitKey(0);
 
 return 0;
+}
+
+bool compareX (Rect rect1, Rect rect2){
+  int error;
+  error = pow((rect1.x-rect2.x),2)+pow((rect1.width()-rect2.width()),2)+ pow((rect1.height()-rect2.height()),2);
+  return (error <= 25? True:False) ;
+}
+
+bool compareY (Rect rect1, Rect rect2){
+  int error;
+  error = pow((rect1.y-rect2.y),2)+pow((rect1.width()-rect2.width()),2)+ pow((rect1.height()-rect2.height()),2);
+  return (error <= 25? True:False) ;
 }
