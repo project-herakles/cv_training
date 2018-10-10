@@ -5,8 +5,7 @@
 using namespace cv;
 using namespace std;
 
-bool compareX (Rect, Rect);
-bool compareY (Rect, Rect);
+bool compare (Rect rect1, Rect rect2);
 int main(int argc, char** argv){
 
 Mat src;
@@ -32,50 +31,41 @@ for (size_t i=0; i<contours.size(); i++)
     boundRect[i] = boundingRect( Mat(contours[i]) );
 
 //find the 9 rectangles
-  int rectangleNumber = 9;
+ //erase some small dots we assume that larger than 10*10 can be regard as a target
+for (size_t i=0; i<boundRect.size();i++){
+  if (boundRect[i].area() <= 100)
+    boundRect.erase(boundRect.begin()+i);
+} 
+
+
+//if the rectangle has 9 similar size rectangles, assume it's the target
+vector<Rect> nineRect;
+for (size_t i=0; i<boundRect.size(); i++){
   int count = 0;
-  vector<Rect> correctRect(rectangleNumber);
-for (size_t i=0; i<boundRect.size();i++){ //search all rectangles
-  if (boundRect[i].area() > 100){ //omit some small dots we assume that larger than 10*10 can be regard as a target
-    Rect rect = boundRect[i];
-    int count2 = 0;
-    for (size_t j=0;j<boundRect.size();j++){
-      Rect rect2 = boundRect[j];
-      if (compareX(rect,rect2) )
-        count2 ++;
-    } 
-    if (count2 >= 3){ //means rect is a potential target
-      int count3 =0;
-      for (size_t k=0;k<boundRect.size();k++){
-          Rect rect3= boundRect[k];
-          if (compareY(rect,rect3))
-            count3 ++;
-          if (count3 >=3){ //means rect is the target
-             count++;
-            correctRect[count] = rect;
-          }
-      }
+  for (size_t j=0; j<boundRect.size(); j++){
+    if ( compare(boundRect[i], boundRect[j]) )
+      count ++;
   }
-  }
+  if (count == 9)
+     nineRect.push_back (boundRect[i]);
 }
-  
-for (size_t i=0; i<contours.size();i++)
-    rectangle(src, correctRect[i].tl(), correctRect[i].br(), Scalar(255,0,0),2);
+
+
+
+for (size_t i=0; i<nineRect.size();i++)
+    rectangle(src, nineRect[i].tl(), nineRect[i].br(), Scalar(255,0,0),2);
+
+    
 
 imshow("window", src);
 waitKey(0);
 
 return 0;
 }
-
-bool compareX (Rect rect1, Rect rect2){
+bool compare (Rect rect1, Rect rect2){
   int error;
-  error = pow((rect1.x-rect2.x),2)+pow((rect1.width()-rect2.width()),2)+ pow((rect1.height()-rect2.height()),2);
-  return (error <= 25? True:False) ;
+  error = pow(rect1.width-rect2.width,2)+ pow(rect1.height-rect2.height,2);
+  return (error <= 100? true:false) ;
 }
 
-bool compareY (Rect rect1, Rect rect2){
-  int error;
-  error = pow((rect1.y-rect2.y),2)+pow((rect1.width()-rect2.width()),2)+ pow((rect1.height()-rect2.height()),2);
-  return (error <= 25? True:False) ;
-}
+
