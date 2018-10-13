@@ -46,7 +46,7 @@ int main()
 		}
 		//display original frame
 		imshow("Frame", frame);
-		char c=(char)waitKey(25);
+		char c=(char)waitKey(1000);
 		if (c==27)
 			break;
 	}
