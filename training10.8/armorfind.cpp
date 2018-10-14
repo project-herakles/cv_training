@@ -17,11 +17,13 @@ ArmorFind::ArmorFind()
   * @param ismono  : input 0 for binocular vision process, other for monocular process
   * @return none
   */
+//Neo - process contours and return output image with circled light bars and cross on the target
 void ArmorFind::process(vector<vector<Point> > contours,const Mat &input,Mat &output,vector<Point> &result,bool ismono){
     Clear();
     output = input.clone();
     RotatedRect RRect;
     // first judgement lightbar contours
+    //Neo - filter out the contours which does not resemble a thin upright standing rectangle
     for(int i=0;i<contours.size();i++){
         RRect = minAreaRect(contours[i]);
         if((fabs(RRect.angle) < 45.0 && RRect.size.height > RRect.size.width)
@@ -34,7 +36,9 @@ void ArmorFind::process(vector<vector<Point> > contours,const Mat &input,Mat &ou
         ArmorCenters.clear();
         return;
     }
+    //Neo - sort the filtered rectangle in ascending order according to the x coordinates of the center of the rectangle
     sort(RectfirstResult.begin(),RectfirstResult.end(),RotateRectSort);
+    //Neo - this function will get the armor lights from the filtered rect object
     GetArmorLights();
     sort(RectResults.begin(),RectResults.end(),RotateRectSort);
     for(int i=0;i<RectResults.size();i++){
@@ -47,12 +51,9 @@ void ArmorFind::process(vector<vector<Point> > contours,const Mat &input,Mat &ou
     }
     GetArmors(output,ismono);
     for(int i=0;i<ArmorCenters.size();i++){
-	//cout << "hello" << endl;
 	//cout << ArmorCenters[i] <<endl;
         DrawCross(output,ArmorCenters[i],20,Scalar(255,0,255),2);
     }
-    //added line
-    //imshow("from funtion", output);
     result = ArmorCenters;
 }
 

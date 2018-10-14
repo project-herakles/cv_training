@@ -15,12 +15,12 @@ static inline bool RotateRectSort(RotatedRect a1,RotatedRect a2){
     return a1.center.x < a2.center.x;
 }
 
-//declare a class ArmorFind to contain all the finding armor related values and functions
+//Neo - declare a class ArmorFind to contain all the finding armor related values and functions
 class ArmorFind
 {
 public:
     ArmorFind();
-    //function to process the contours acquired from the input image and return output image with circled light bars and crossed target
+    //Neo - function to process the contours acquired from the input image and return output image with circled light bars and crossed target
     void process(vector<vector<Point>> contours,const Mat &input,Mat &output,vector<Point> &result,bool ismono);
 private:
     void ContourCenter(const vector<Point> contour,Point &center);
@@ -28,13 +28,13 @@ private:
     double Pointdis(const Point &p1,const Point &p2);
     Point PointBetween(const Point &p1,const Point &p2);
     void Clear(void);
-    //get the first filter of possible armor light bars
+    //Neo - get the first filter of possible armor light bars
     void GetArmorLights(void);
-    //get the possible armor light bar pairs and return the points of the possbile pairs
+    //Neo - get the possible armor light bar pairs and return the points of the possbile pairs
     void GetArmors(Mat &image,bool ismono);
-    //get the gradient of the 2 points
+    //Neo - get the gradient of the 2 points
     double GetK(Point2f L1,Point2f L2);
-    //draw crosses for the found target
+    //Neo - draw crosses for the found target
     void DrawCross(Mat &img,Point center,int size,Scalar color,int thickness = 2);
 
 public:
