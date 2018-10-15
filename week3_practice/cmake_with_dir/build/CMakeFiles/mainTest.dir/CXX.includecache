@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/add.h
+
+/home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_dir/src/add.cpp
+
+/home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_dir/src/main.cpp
+iostream
+-
+add.h
+/home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_dir/src/add.h
+
