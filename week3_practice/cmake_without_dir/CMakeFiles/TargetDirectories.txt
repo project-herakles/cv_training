@@ -1,0 +1,3 @@
+/home/ivan/Robomaster-training/cv_training/week3_practice/CMakeFiles/rebuild_cache.dir
+/home/ivan/Robomaster-training/cv_training/week3_practice/CMakeFiles/main.dir
+/home/ivan/Robomaster-training/cv_training/week3_practice/CMakeFiles/edit_cache.dir
