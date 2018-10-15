@@ -85,7 +85,7 @@ Mat image_binary_processing(Mat image, int thres){
 }
 
 vector<vector<Point>> contour_filtering(vector<vector<Point>> contour, pair<int, int> count, double height_to_width_ratio, double percentage_error){
-   // 1. filter for the useless small porint first
+    // 1. filter for the useless small porint first
     int index = 0;
     vector<pair<int ,int>> mapping_sizeToIndex;
     vector<vector<Point>> filtered_contour;
@@ -128,10 +128,12 @@ vector<vector<Point>> contour_filtering(vector<vector<Point>> contour, pair<int,
         mapping_sizeToIndex.push_back(make_pair(rect_area, index));
         
     }
+
+   
     // sort them by size, largest come first
     sort(mapping_sizeToIndex.begin(), mapping_sizeToIndex.end(), sort_by_size);
     
-    for(int i = 0; i < 9;i++){
+    for(int i = 0; i < 11;i++){
         // assign the largest 9 contour to the filtered_contour
        /* cout << "assigned rect" << mapping_sizeToIndex[i].second << "with area" << mapping_sizeToIndex[i].first << endl;*/
         filtered_contour.push_back(contour[mapping_sizeToIndex[i].second]);
@@ -146,7 +148,7 @@ vector<Mat> image_cropping(vector<vector<Point>> contour, int num){
     vector<Mat> img;
     for (int i = 0; i < num; i++){
         Rect rect = boundingRect(contour[i]);
-        Rect myROI = (rect.tl().x , rect.br().y, rect.width, rect.height);
+        //Rect myROI = (rect.tl().x , rect.br().y, rect.width, rect.height);
         //img.push_back(rect(myROI));
 
     }
