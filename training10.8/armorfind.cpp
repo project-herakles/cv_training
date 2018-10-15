@@ -49,7 +49,9 @@ void ArmorFind::process(vector<vector<Point> > contours,const Mat &input,Mat &ou
         putText(output,ss.str(),Point(RectResults[i].center.x,RectResults[i].center.y-5),FONT_HERSHEY_COMPLEX_SMALL, 1, Scalar(0,255,255));
         */
     }
+    //Neo - This function will search for possible pairs of bar lights and calculate the midpoint between the pairs and output the points for cross drawing purposes later
     GetArmors(output,ismono);
+    //Neo - draw crosses on the found target
     for(int i=0;i<ArmorCenters.size();i++){
 	//cout << ArmorCenters[i] <<endl;
         DrawCross(output,ArmorCenters[i],20,Scalar(255,0,255),2);
