@@ -152,6 +152,7 @@ void ArmorFind::GetArmorLights(){
 void ArmorFind::GetArmors(Mat &image,bool ismono){
     size_t size = RectResults.size();
     ArmorOldCenters = ArmorCenters;
+    //Neo - clear centers from previous frame
     ArmorCenters.clear();
     if(size < 2){
         return;
@@ -162,14 +163,16 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
     float ydis = 0;
     float maxangle,xdis,heightmax,hwdiv;
     Point2f _pt[4],pt[4];
+    //Neo - lambda function to caltulate the angle between two points
     auto ptangle = [](const Point2f &p1,const Point2f &p2){
         return fabs(atan2(p2.y-p1.y,p2.x-p1.x)*180.0/CV_PI);
     };
+    //Neo - lambda function to calculate the area of 3 points by using shoe lace formula
     auto GetAreaofp3 = [](const Point2f &p1,const Point2f &p2,const Point2f &p3){
         Mat matrix = (Mat_<double>(3,3)<<p1.x,p2.y,1,p2.x,p2.y,1,p3.x,p3.y,1);
         return 0.5*determinant(matrix);
     };
-
+    
     for(int i=0;i<size-1;i++){
         angleL1 = fabs(RectResults[i].angle);
         L1 = RectResults[i].center;
@@ -179,6 +182,7 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
           * 0 2
           * 1 3
           * */
+	//Neo - store the two right vertices of the object (since the list is being sorted in ascending with respect to x coordinates)
         if(angleL1 > 45.0){
          pt[0] = _pt[3];
          pt[1] = _pt[0];
@@ -188,6 +192,7 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
         }
         for(int j=i+1;j<size;j++){
             L2 = RectResults[j].center;
+	    //Neo - find vertical distance difference between two rect
             if(L1.x != L2.x){
                 K = GetK(L1,L2);
                 if(L1.y > L2.y){
@@ -196,24 +201,28 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
                     ydis = L2.y - L1.y;
                 }
                 areaL2 = RectResults[j].size.height * RectResults[j].size.width;
-                if(areaL1 > areaL2){
+                //Neo - calculate the ratio scale between area of two rect
+		if(areaL1 > areaL2){
                     divscale = areaL1 / areaL2;
                 }else{
                     divscale = areaL2 / areaL1;
                 }
                 angleL2 = fabs(RectResults[j].angle);
-
+		
                 RectResults[j].points(_pt);
-                if(angleL2 > 45.0){
+                //Neo - store the two left vertices of the object (for computation with the two right vertices of the reference rect)
+		if(angleL2 > 45.0){
                  pt[2] = _pt[2];
                  pt[3] = _pt[1];
                 }else{
                  pt[2] = _pt[1];
                  pt[3] = _pt[0];
                 }
+		//Neo - assign the higher of angle between pairs of opposite vertices to maxangle
                 maxangle = MAX(ptangle(pt[0],pt[2]),ptangle(pt[1],pt[3]));
                 //std::cout<<"angle:"<<maxangle<<std::endl;
-               // maxangle = 0;
+                // maxangle = 0;
+		//Neo - another components of consideration for possible pairs of the rect object? (not really sure what is happening here)
                 if(angleL1 > 45.0 && angleL2 < 45.0){
                     angleabs = 90.0 - angleL1 + angleL2;
                 }else if(angleL1 <= 45.0 && angleL2 >= 45.0){
@@ -222,16 +231,23 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
                     if(angleL1 > angleL2) angleabs = angleL1 - angleL2;
                     else angleabs = angleL2 - angleL1;
                 }
+		//Neo - horizontal distance difference between 2 rect
                 xdis = fabs(L1.x - L2.x);
                 heightmax =MAX(MAX(RectResults[i].size.width,RectResults[j].size.width),MAX(RectResults[i].size.height,RectResults[j].size.height));
-                hwdiv = xdis/heightmax;
+                //Neo - ratio of the rect (width : height)
+		hwdiv = xdis/heightmax;
+		//Neo - evaluation from all the data computed above to find possible pairs of rect 
+		//Neo - rects which are too vertically will be filtered out
+		//Neo - the rectangle between the two rects will also be filtered off if it is too thin
                 if(fabs(K) < 0.5 && divscale < 3.0 && maxangle < 20.0 && hwdiv < 10.0 && ydis < 0.4*heightmax){//&& ydis < armormin
                     if(angleabs < 7){
                         if(ismono){
+	                    //Neo - get the area of the rectangle enclosed by the two rects (using shoelace formula on three points each to find the area of triangle and sum them up to get the area of the rectangle
                             float armor_area = GetAreaofp3(pt[0],pt[1],pt[2]) + GetAreaofp3(pt[1],pt[2],pt[3]);
                             //std::cout<<"area:"<<armor_area<<std::endl;
                             Monodata pushdata;
                             pushdata.area = armor_area;
+			    //Neo - set the center points to be the point right in the middle between two center points of the two rects
                             pushdata.center = Point(0.5*(L1.x+L2.x),0.5*(L1.y+L2.y));
                             if(hwdiv > 5.0){
                                 pushdata.armor = pushdata.big_armor;
@@ -240,6 +256,7 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
                             }
                             monodata.push_back(pushdata);
                             ArmorCenters.push_back(Point(0.5*(L1.x+L2.x),0.5*(L1.y+L2.y)));
+			    //Neo - reset ArmorLostDelay to 0 (is used for later computation)
                             ArmorLostDelay = 0;
                         }else{
                             ArmorCenters.push_back(Point(0.5*(L1.x+L2.x),0.5*(L1.y+L2.y)));
@@ -251,7 +268,9 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
         }
     }
     if(ArmorCenters.size()==0){
+	//Neo - if there are no target found in this particular frame, ArmorLostDelay will increment by 1 
         ArmorLostDelay++;
+	//Neo - if the target is lost for less than 10 frames, the program will still take the targets as the latest targets found
         if(ArmorLostDelay < 10){
             ArmorCenters = ArmorOldCenters;
         }
@@ -263,6 +282,7 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
   * @param L1 L2: points input
   * @return slope of the line by these 2 points
   */
+//Neo - find the slope between two points
 double ArmorFind::GetK(Point2f L1,Point2f L2){
     return (L1.y - L2.y) / (L1.x - L2.x);
 }
@@ -312,7 +332,7 @@ void ArmorFind::ContourCenter(const vector<Point> contour,Point &center){
     center.y = mu.m01 / mu.m00;
 }
 
-
+//Neo - clear all the previous stored data
 void ArmorFind::Clear(void){
     monodata.clear();
     CellMaxs.clear();
