@@ -67,6 +67,7 @@ void ArmorFind::process(vector<vector<Point> > contours,const Mat &input,Mat &ou
   * @param thickness: the thickness of the cross
   * @return none
   */
+//Neo - function to draw crosses
 void ArmorFind::DrawCross(Mat &img,Point center,int size,Scalar color,int thickness){
     Point L1,L2,B1,B2;
     int xL = center.x - size > 0 ? center.x - size:0;
@@ -95,7 +96,12 @@ void ArmorFind::GetArmorLights(){
     cellmaxsize = RectfirstResult[0].size.height * RectfirstResult[0].size.width;
     if(cellmaxsize > 2500) cellmaxsize = 0;
     int maxsize;
-
+    /*
+     * Neo - this loop through the rect object of possible light bars
+     * Neo - it will group all the rect objects that are near to each other with respect of x coordinates together (difference < 10)
+     * Neo - rect object with area > 2500 will be filtered out (the object is too near for the turret to shoot)
+     * Neo - it will also stores the maximum size of the grouped rect object in another vector
+     */
     for(int i=1;i<size;i++){
         if(RectfirstResult[i].center.x - RectfirstResult[i-1].center.x <10){
             maxsize = RectfirstResult[i].size.height * RectfirstResult[i].size.width;
@@ -103,7 +109,7 @@ void ArmorFind::GetArmorLights(){
             if(maxsize > cellmaxsize) cellmaxsize = maxsize;
             Groups.push_back(RectfirstResult[i]);
         }else{
-            Armorlists.push_back(Groups);\
+            Armorlists.push_back(Groups);
             CellMaxs.push_back(cellmaxsize);
             cellmaxsize = 0;
             maxsize = 0;
@@ -116,9 +122,13 @@ void ArmorFind::GetArmorLights(){
         //sizescale = (float)RectfirstResult[i].size.height/(float)RectfirstResult[i].size.width;
         //std::cout<<"scale:"<<sizescale<<" width:"<<RectfirstResult[i].size.width<<std::endl;
     }
-    Armorlists.push_back(Groups);\
+    Armorlists.push_back(Groups);
     CellMaxs.push_back(cellmaxsize);
     size = Armorlists.size();
+    /*
+     * Neo - this loop filters out grouped rect objects with area < 5
+     * Neo - for each grouped rect objects, this loop will filter out all the rect objects with area != maximum area of the rect object in that particular group
+     */
     for(int i=0;i<size;i++){
         int Gsize = Armorlists[i].size();
         int GroupMax = CellMaxs[i];
