@@ -66,7 +66,7 @@ CMAKE_BINARY_DIR = /home/ivan/Robomaster-training/cv_training/week3_practice/cma
 CMakeFiles/DisplayImage.dir/all:
 	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/depend
 	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/build/CMakeFiles --progress-num=1,2 "Built target DisplayImage"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/build/CMakeFiles --progress-num=1,2,3 "Built target DisplayImage"
 .PHONY : CMakeFiles/DisplayImage.dir/all
 
 # Include target in all.
@@ -76,7 +76,7 @@ all: CMakeFiles/DisplayImage.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/DisplayImage.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/DisplayImage.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/build/CMakeFiles 0
 .PHONY : CMakeFiles/DisplayImage.dir/rule

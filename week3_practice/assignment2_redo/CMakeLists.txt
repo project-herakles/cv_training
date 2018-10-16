@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 2.8.9)
+project( Assignment2_redo )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories( include )
+
+message(STATUS "OpenCV library status:")
+message(STATUS "    config: ${OpenCV_DIR}")
+message(STATUS "    version: ${OpenCV_VERSION}")
+message(STATUS "    libraries: ${OpenCV_LIBS}")
+message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
+
+file( GLOB SOURCES "src/*.cpp" )
+add_executable( main ${SOURCES} ) 
+target_link_libraries( main ${OpenCV_LIBS} )

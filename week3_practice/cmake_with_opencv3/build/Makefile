@@ -150,6 +150,33 @@ src/DisplayImage.cpp.s:
 	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/src/DisplayImage.cpp.s
 .PHONY : src/DisplayImage.cpp.s
 
+src/add.o: src/add.cpp.o
+
+.PHONY : src/add.o
+
+# target to build an object file
+src/add.cpp.o:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/src/add.cpp.o
+.PHONY : src/add.cpp.o
+
+src/add.i: src/add.cpp.i
+
+.PHONY : src/add.i
+
+# target to preprocess a source file
+src/add.cpp.i:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/src/add.cpp.i
+.PHONY : src/add.cpp.i
+
+src/add.s: src/add.cpp.s
+
+.PHONY : src/add.s
+
+# target to generate assembly for a file
+src/add.cpp.s:
+	$(MAKE) -f CMakeFiles/DisplayImage.dir/build.make CMakeFiles/DisplayImage.dir/src/add.cpp.s
+.PHONY : src/add.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -162,6 +189,9 @@ help:
 	@echo "... src/DisplayImage.o"
 	@echo "... src/DisplayImage.i"
 	@echo "... src/DisplayImage.s"
+	@echo "... src/add.o"
+	@echo "... src/add.i"
+	@echo "... src/add.s"
 .PHONY : help
 
 

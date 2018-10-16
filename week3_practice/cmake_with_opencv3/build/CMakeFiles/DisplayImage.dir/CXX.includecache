@@ -6,6 +6,8 @@
 
 #IncludeRegexTransform: 
 
+../include/add.h
+
 /home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/src/DisplayImage.cpp
 stdio.h
 -
@@ -13,8 +15,8 @@ opencv2/opencv.hpp
 -
 iostream
 -
-add.cpp
-/home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/src/add.cpp
+add.h
+/home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/src/add.h
 
 /home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/src/add.cpp
 

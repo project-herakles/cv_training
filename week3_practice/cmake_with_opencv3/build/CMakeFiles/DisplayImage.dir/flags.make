@@ -6,5 +6,5 @@ CXX_FLAGS =
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -isystem /usr/local/include -isystem /usr/local/include/opencv 
+CXX_INCLUDES = -isystem /usr/local/include -isystem /usr/local/include/opencv -I/home/ivan/Robomaster-training/cv_training/week3_practice/cmake_with_opencv3/include 
 
