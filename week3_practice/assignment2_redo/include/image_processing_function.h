@@ -7,9 +7,13 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 #include <algorithm>
+#include <string>
+#include <vector>
 
 using namespace cv;
+using namespace std;
 
 Mat image_processing(Mat image, int thres, int blurSize);
+void image_cropping(Mat image, vector<vector<Point>> contour);
 
 #endif

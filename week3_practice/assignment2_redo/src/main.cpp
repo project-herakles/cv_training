@@ -56,6 +56,7 @@ int main(){
 
 
         //Display the imageFrame with processing and with contour drawn 
+        image_cropping(imageFrame, contour);
         imshow("Processed", imageFrameProcessed);
         imshow("imageFrame", imageFrame);
              
@@ -74,7 +75,8 @@ int main(){
     if (chCheckForEscKey != 27){
         waitKey(0);
     }
-
+    cap.release();
+    destroyAllWindows();
     return(0);
     
 }

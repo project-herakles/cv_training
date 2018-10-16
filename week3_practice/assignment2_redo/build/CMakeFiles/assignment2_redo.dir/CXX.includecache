@@ -37,6 +37,10 @@ iostream
 -
 algorithm
 -
+string
+-
+vector
+-
 
 /home/ivan/Robomaster-training/cv_training/week3_practice/assignment2_redo/src/contour_filtering_function.cpp
 contour_filtering_function.h
@@ -73,6 +77,10 @@ algorithm
 -
 image_processing_function.h
 /home/ivan/Robomaster-training/cv_training/week3_practice/assignment2_redo/src/image_processing_function.h
+string
+-
+vector
+-
 
 /home/ivan/Robomaster-training/cv_training/week3_practice/assignment2_redo/src/main.cpp
 opencv2/opencv.hpp
