@@ -262,6 +262,7 @@ void ArmorPredict::Predict(vector<Point> Left, vector<Point> Right,int videotype
         }
     }
     //std::cout<<"yaw:"<<yaw_out<<" pitch:"<<pitch_out<<std::endl;
+    // Ivan - update the datas, noted that the yaw_out and pitch_out is calculated by the AngleFit()
     OldResult = Result;
     OldPositions = Positions;
     LeftLast = Left;
@@ -290,6 +291,7 @@ float ArmorPredict::CenterDis(const AbsPosition a1,const AbsPosition a2){
 /**
   * @brief kalman filter for point. never use
   */
+// Ivan - Use kalman filter to predicct the next x,y coordinate of armor?
 void ArmorPredict::Classical_kalman(Kalman4Point &KF){
     Point2f newbias,K,Kg;                       //Kalmanfliter
     KF.P_old.x   = KF.P_Predict.x;
@@ -318,34 +320,42 @@ void ArmorPredict::AngleFit(const AbsPosition input,float *pitch,float *yaw,floa
     // Ivan - Calculate the Educean distance in 3d, express in temrs of meter 
     float shoot_distance = sqrtf(input.x * input.x + input.y * input.y + input.z * input.z)*0.001; // m
     // expect bullet fly time is 0.1s
+    // Ivan - assign shoot speed proportional to the distance such that the flight time is 0.1s
     *shootspd = shoot_distance * 10.0;//
+    // Ivan - calculate the yaw_angle with the same formula stated above
     *yaw = atan(input.x/input.z)*1303.7972938;
     int shootspeedmax;
     // max bullet speed:
     // level 0 / level 1: 22m/s
     // level 2          : 25m/s
     // level 3          : 28m/s
+    // Ivan - assign the max bullet speed as stated in the table
     switch(level){
         case 0:
         case 1:shootspeedmax = 22;break;
         case 2:shootspeedmax = 25;break;
         case 3:shootspeedmax = 28;break;
     }
-
+    // Ivan - prevent the shoot speed go beyond the maxspeed
     if(*shootspd != 0){
         if(*shootspd > shootspeedmax){
             *shootspd = shootspeedmax;
             flytime = shoot_distance / (*shootspd);
+            // Ivan - normally flytime should be 0.1s except the calculated speed go beyond the cap
+            //        s = 1/2*a*t^2
             gravity_offset = 4.905 * flytime * flytime;
         }else if(*shootspd < 14.0){
-            *shootspd = 14.0;
+            *shootspd = 14.0; 
+            // Ivan - set the minimum shooting speed as 14
             flytime = shoot_distance / (*shootspd);
             gravity_offset = 4.905 * flytime * flytime;
         }else{
+            // Ivan - normal gravity offset when the flight time is 0.1s
             gravity_offset = 0.04905;
         }
     }
     //std::cout<<"shootspeed:"<<*shootspd<<std::endl;
+    // Ivan - y-position have to aim higher to offset the gravity effect, others remain the same
     *pitch = -atan((input.y+gravity_offset*1000.0)/input.z)*1303.7972938;
 }
 
