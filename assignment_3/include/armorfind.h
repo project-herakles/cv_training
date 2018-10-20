@@ -1,8 +1,10 @@
 #ifndef ARMORFIND_H
 #define ARMORFIND_H
 
-#include "include/Header.h"
+#include "Header.h"
+#include <vector>
 
+using namespace std;
 using namespace cv;
 
 // Ivan - New things learnt

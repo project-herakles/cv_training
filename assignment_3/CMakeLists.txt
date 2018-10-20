@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 2.8)
+project( assignment_3 )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories(include)
+
+message(STATUS "OpenCV library status:")
+message(STATUS "    config: ${OpenCV_DIR}")
+message(STATUS "    version: ${OpenCV_VERSION}")
+message(STATUS "    libraries: ${OpenCV_LIBS}")
+message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
+
+file( GLOB SOURCES "src/*.cpp" )
+add_executable( assignment_3 src/main.cpp src/imageProcess.cpp src/armorfind.cpp)
+target_link_libraries( assignment_3 ${OpenCV_LIBS} )

@@ -1,0 +1,3 @@
+/home/ivan/Robomaster-training/cv_training/assignment_3/build/CMakeFiles/rebuild_cache.dir
+/home/ivan/Robomaster-training/cv_training/assignment_3/build/CMakeFiles/assignment_3.dir
+/home/ivan/Robomaster-training/cv_training/assignment_3/build/CMakeFiles/edit_cache.dir

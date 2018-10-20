@@ -9,13 +9,11 @@
 #include <opencv2/core/core.hpp>
 #include <string>
 #include <math.h>
-#include <caffe/caffe.hpp>
 #include <algorithm>
 #include <iosfwd>
 #include <memory>
 #include <utility>
 
-using namespace caffe;  // NOLINT(build/namespaces)
 using std::string;
 using std::cout;
 using std::endl;

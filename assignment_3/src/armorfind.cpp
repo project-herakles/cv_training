@@ -1,5 +1,6 @@
-#include "include/ArmorFind/armorfind.h"
-
+#include "../include/armorfind.h"
+#include <vector>
+using namespace std;
 ArmorFind::ArmorFind()
 {
     ArmorLostDelay = 0;
