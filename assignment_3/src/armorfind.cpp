@@ -28,7 +28,7 @@ void ArmorFind::process(vector<vector<Point> > contours,const Mat &input,Mat &ou
         //       case 1: angle < 45 and height of the Rrect > width of the Rrect
         //       case 2: angle > 45 and width of the Rrect > height of the Rrect
         //       Push back the Rotated rectangle to hte first result
-        //       overall speaking, this loop find the qualified Rotated rectangle
+        //       overall speaking, this loop find the qualified Rotated rectangle that is thin
         RRect = minAreaRect(contours[i]);
         if((fabs(RRect.angle) < 45.0 && RRect.size.height > RRect.size.width)
                 || (fabs(RRect.angle) > 45.0 && RRect.size.width > RRect.size.height)
@@ -42,11 +42,11 @@ void ArmorFind::process(vector<vector<Point> > contours,const Mat &input,Mat &ou
         ArmorCenters.clear();
         return;
     }
-    // Ivan - sort the Rotated retangle according to the x coordinate of their center
+    // Ivan - sort the Rotated retangle according the ascending order of  x coordinate of their center
     sort(RectfirstResult.begin(),RectfirstResult.end(),RotateRectSort);
-    // Ivan - update the RectResult using GetArmorlights()
+    // Ivan - update the RectResult using GetArmorlights() that having rectangle of armor lights
     GetArmorLights();
-    // Ivan - sort again the Rectangle according to their x-center-coordinate
+    // Ivan - sort again the Rectangle according to the ascending order of their x-center-coordinate
     sort(RectResults.begin(),RectResults.end(),RotateRectSort);
     for(int i=0;i<RectResults.size();i++){
         //std::cout<<"("<<RectResults[i].center.x<<","<<RectResults[i].center.y<<")"<<std::endl;
@@ -58,6 +58,7 @@ void ArmorFind::process(vector<vector<Point> > contours,const Mat &input,Mat &ou
         */
     }
     GetArmors(output,ismono);
+    // Ivan - this draw the cross on the center of the armor
     for(int i=0;i<ArmorCenters.size();i++){
         DrawCross(output,ArmorCenters[i],20,Scalar(255,0,255),2);
     }
@@ -72,6 +73,8 @@ void ArmorFind::process(vector<vector<Point> > contours,const Mat &input,Mat &ou
   * @param thickness: the thickness of the cross
   * @return none
   */
+
+// Ivan - this function draw cross on the center
 void ArmorFind::DrawCross(Mat &img,Point center,int size,Scalar color,int thickness){
     Point L1,L2,B1,B2;
     int xL = center.x - size > 0 ? center.x - size:0;
@@ -107,8 +110,8 @@ void ArmorFind::GetArmorLights(){
     cellmaxsize = RectfirstResult[0].size.height * RectfirstResult[0].size.width;
     if(cellmaxsize > 2500) cellmaxsize = 0;
     int maxsize;
-    // Ivan - Group the Rrect according x-center-distance < 10, find the cellmaxsize among each group
-    //        fo those grouping Rrect(x-center-distance < 10), omit the maxSize if the area > 2500
+    // Ivan - Group the Rrect according x-center-distance < 10(near), find the cellmaxsize among each group
+    //        fo those grouping Rrect(x-center-distance < 10), omit the maxSize if the area > 2500(noise, to close)
     //        for those single Rrect, simply put them in a individual slot and record their area
     for(int i=1;i<size;i++){
         // Ivan - why no need fabs? because we sorted them already
@@ -118,7 +121,7 @@ void ArmorFind::GetArmorLights(){
             if(maxsize > cellmaxsize) cellmaxsize = maxsize;
             Groups.push_back(RectfirstResult[i]);
         }else{
-            Armorlists.push_back(Groups);\
+            Armorlists.push_back(Groups);
             CellMaxs.push_back(cellmaxsize);
             cellmaxsize = 0;
             maxsize = 0;
@@ -180,7 +183,7 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
         //        overall speaking, it return the angle between 2 point 
         return fabs(atan2(p2.y-p1.y,p2.x-p1.x)*180.0/CV_PI);
     };
-    // Ivan - I guess this is using matrix the get the traingular area of 3 point 
+    // Ivan - I guess this is using matrix to calculate traingular area of 3 point 
     //        area = 1/2 * determinant of matrix
     auto GetAreaofp3 = [](const Point2f &p1,const Point2f &p2,const Point2f &p3){
         Mat matrix = (Mat_<double>(3,3)<<p1.x,p2.y,1,p2.x,p2.y,1,p3.x,p3.y,1);
@@ -200,7 +203,7 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
           * 0 2
           * 1 3
           * */
-        // Ivan - store the vertice into correct reference position according to the degree of rotation
+        // Ivan - store the rightmost vertice of Rectangle L1 according to the degree making to the ground
         if(angleL1 > 45.0){
          pt[0] = _pt[3];
          pt[1] = _pt[0];
@@ -230,6 +233,7 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
                 angleL2 = fabs(RectResults[j].angle);
 
                 RectResults[j].points(_pt);
+                // Ivan - store the leftmost vertice of Rectangle L2 according to the degree making to the ground
                 if(angleL2 > 45.0){
                  pt[2] = _pt[2];
                  pt[3] = _pt[1];
@@ -241,28 +245,43 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
                 maxangle = MAX(ptangle(pt[0],pt[2]),ptangle(pt[1],pt[3]));
                 //std::cout<<"angle:"<<maxangle<<std::endl;
                // maxangle = 0;
-                // Ivan - calculate the angle difference and x-distance of them 
+                // Ivan - calculate the absolute angle difference, for first two case, its because there are 
+                //        extreme cases that program recognize contour as rotated angle of ~-90degree while
+                //        its upright
+                //        maxangle vs angleabs
+                //        - maxangle is checking verticle difference 
+                //        - anglebbs only focus on rotation difference 
+                //        then calculate the and x-distance of them 
                 if(angleL1 > 45.0 && angleL2 < 45.0){
+                    // Ivan - satisfying case for angleans < 7
+                    //        angleL2          angleL1       angleabs
+                    //           0               90              0
+                    //           3               87              6
                     angleabs = 90.0 - angleL1 + angleL2;
                 }else if(angleL1 <= 45.0 && angleL2 >= 45.0){
+                    // Ivan - satisfying case for angleabs < 7
+                    //        angleL2           angleL1     angleabs
+                    //           90               0             0
+                    //           87               3             6 
                     angleabs = 90.0 - angleL2 + angleL1;
                 }else{
                     if(angleL1 > angleL2) angleabs = angleL1 - angleL2;
                     else angleabs = angleL2 - angleL1;
                 }
                 xdis = fabs(L1.x - L2.x);
+                // Ivan - find the longest side 
                 heightmax =MAX(MAX(RectResults[i].size.width,RectResults[j].size.width),MAX(RectResults[i].size.height,RectResults[j].size.height));
                 // Ivan - hwdiv store the ratio of the maximum height and xdis
                 hwdiv = xdis/heightmax;
-                // Ivan - If the slope between their center is +ve and < 0.5 
-                //        the larger rect is not 3 times larger then the smaller rect
-                //        the maximum angle between their vertices < 20
-                //        the ratio of maximum height and x-distance < 10 
-                //        the y distance < 0.4*maximum rectangle height 
+                // Ivan - If the absolute slope between their center < 0.5(avoid high verticle-diff in center) 
+                //        the larger rect is not 3 times larger then the smaller rect (light size not differ too much)
+                //        the maximum angle between their vertices < 20 (avoid high verticle-diff in upline)
+                //        the ratio of maximum height and x-distance < 10 (rect in-between cant be too flat)
+                //        the y distance < 0.4*maximum rectangle height (svoif high verticle diff in center)
                 //        then it's either small or big armor
                 if(fabs(K) < 0.5 && divscale < 3.0 && maxangle < 20.0 && hwdiv < 10.0 && ydis < 0.4*heightmax){//&& ydis < armormin
                     if(angleabs < 7){
-                        // Ivan - if they are roughly parallel(angleabs < 7)     
+                        // Ivan - if they are roughly parallel without(angleabs < 7)     
                         if(ismono){
                             float armor_area = GetAreaofp3(pt[0],pt[1],pt[2]) + GetAreaofp3(pt[1],pt[2],pt[3]);
                             //std::cout<<"area:"<<armor_area<<std::endl;
@@ -270,8 +289,9 @@ void ArmorFind::GetArmors(Mat &image,bool ismono){
                             pushdata.area = armor_area;
                             pushdata.center = Point(0.5*(L1.x+L2.x),0.5*(L1.y+L2.y));
                             // Ivan - find the area, center of the armor
-                            //        if the ratio of x-distance/heightmax > 5, it is big armor, otherwise its 
-                            //        small
+                            //        if the ratio of x-distance/heightmax > 5, let say,
+                            //        if it is flat, then it is big armor, otherwise its 
+                            //        small armor
                             if(hwdiv > 5.0){
                                 pushdata.armor = pushdata.big_armor;
                             }else{
