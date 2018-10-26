@@ -21,13 +21,12 @@ void threshold( Mat m);
 
 bool comp(const vector<int>& a, const vector<int>& b)  {
 	return (a[4]>b[4]);//sort in decending order
-	 //why after adding this line, it is ok?
 }
 
 int main( int argc, char** argv )
 {
     //2.a
-    String srcName( "Rune2" ); // by default or we can ask the user for input
+    String srcName( "Rune2" );
     int i=0;
 
     if( argc > 1)
@@ -48,8 +47,6 @@ int main( int argc, char** argv )
         cout <<  "Could not open or find the src" << std::endl ;
         return -1;
     }
-	//namedWindow( "Display window", WINDOW_AUTOSIZE ); // Create a window for display.
-    //imshow( "Display window", src );  // Show our src inside it.
 
     //2.b
     cout<<srcName<<" size: "<<src.size()<<endl;
