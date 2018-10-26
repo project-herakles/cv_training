@@ -4,7 +4,8 @@
 #include <iostream>
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
+
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -16,10 +17,12 @@ int thresh = 100;
 RNG rng(12345);
 int max_binary_value=255;
 
-void threshold0( Mat m);
-void threshold1( Mat m);
-bool comp(const vector<int>& , const vector<int>& ) ;
-//why it does not work with name compare??????
+void threshold( Mat m);
+
+bool comp(const vector<int>& a, const vector<int>& b)  {
+	return (a[4]>b[4]);//sort in decending order
+	 //why after adding this line, it is ok?
+}
 
 int main( int argc, char** argv )
 {
@@ -32,7 +35,7 @@ int main( int argc, char** argv )
         srcName = argv[4];
     }
     Mat src;
-
+ 
     src = imread( srcName+".jpg", IMREAD_COLOR ); 
     i=1;
     if (src.empty()){
@@ -45,8 +48,8 @@ int main( int argc, char** argv )
         cout <<  "Could not open or find the src" << std::endl ;
         return -1;
     }
-	namedWindow( "Display window", WINDOW_AUTOSIZE ); // Create a window for display.
-    imshow( "Display window", src );  // Show our src inside it.
+	//namedWindow( "Display window", WINDOW_AUTOSIZE ); // Create a window for display.
+    //imshow( "Display window", src );  // Show our src inside it.
 
     //2.b
     cout<<srcName<<" size: "<<src.size()<<endl;
@@ -71,50 +74,27 @@ int main( int argc, char** argv )
 	}
 	namedWindow( "Binary: ", WINDOW_AUTOSIZE );
 	imshow( "Binary: ", binary_src ); 
-	//threshold0( binary_src);
-	threshold1( binary_src);
 	
+	//3
+	threshold( binary_src);
     waitKey(0); // Wait for a keystroke in the window
     return 0;
 }
 
-void threshold0(Mat binary_src )//this draws contour
-{
-    Mat canny_output;
-    Canny( binary_src, canny_output, thresh, thresh*2 );
-    vector<vector<Point> > contours;
-    vector<Vec4i> hierarchy;
-    findContours( canny_output, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE );
-    Mat drawing = Mat::zeros( canny_output.size(), CV_8UC3 );
-    for( size_t i = 0; i< contours.size(); i++ )
-    {
-        Scalar color = Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
-		color = Scalar( 0, 0,255);
-        drawContours( drawing, contours, (int)i, color, 2, LINE_8, hierarchy, 0 );
-    }
-    imshow( "Contours", drawing );
-	
-	//print out contours
-	/*
-	for (int i=0; i<contours.size(); i++){
-		for (int j=0; j<contours[i].size(); j++){
-			cout<< "( " << contours[i][j].x<<" , "<<contours[i][j].y<<" )  ";
-		}
-		cout<<endl;
-	}
-	*/	
-	
-}
 
-void threshold1(Mat binary_src )//this draws bounding Rect
+void threshold(Mat binary_src )//this draws bounding Rect
 {
+//use canny operation
     Mat canny_output;
     Canny( binary_src, canny_output, thresh, thresh*2 );
 
+//findContours
     vector<vector<Point> > contours;
-    //findContours( canny_output, contours, RETR_TREE, CHAIN_APPROX_SIMPLE );
-	findContours( canny_output, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE );
+	vector<Vec4i> hierarchy;
+    findContours( canny_output, contours, RETR_TREE, CHAIN_APPROX_SIMPLE );
+	//findContours( canny_output, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE );
 
+//find bounding polygons and then bounding rects
     vector<vector<Point> > contours_poly( contours.size() );
     vector<Rect> boundRect( contours.size() );
 
@@ -127,41 +107,33 @@ void threshold1(Mat binary_src )//this draws bounding Rect
     Mat drawing1 = Mat::zeros( canny_output.size(), CV_8UC3 );
     for( size_t i = 0; i< contours.size(); i++ )
     {
-        Scalar color = Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
-		color = Scalar( 0, 0,255);
-        drawContours( drawing1, contours_poly, (int)i, color );
+		Scalar color = Scalar( 0, 0,255);
+        drawContours( drawing1, contours, (int)i, color, 1, LINE_8, hierarchy, 0  );
 		color = Scalar( 0, 255,0);
-        rectangle( drawing1, boundRect[i].tl(), boundRect[i].br(), color, 2 );
+        rectangle( drawing1, boundRect[i].tl(), boundRect[i].br(), color, 1 );
     }
-	//print out pointes of bounding rectangles.
-	cout<<"boudRect:"<<endl;
-	for (int i=0; i<boundRect.size(); i++){
-		
-		cout<< "( " << boundRect[i].x<<" , "<<boundRect[i].y<< " , " <<boundRect[i].width<<" , "<<boundRect[i].height<<" ) ";
-		cout<<endl;
-	}
-
-	imshow( "Contours1", drawing1 );
+//draw contour and bounding Rect
+	namedWindow("contours and bounding Rect", WINDOW_AUTOSIZE);
+	imshow( "contours and bounding Rect", drawing1 );
+	
 
 	
-	//We can take only those 9 largest rectangles in the list and draw them on the secreen
+//calculate area of rects and store them in rectWithArea
 	
-	Mat drawing2 = Mat::zeros( canny_output.size(), CV_8UC3 );
+	Mat drawing2 = Mat::zeros( drawing1.size(), CV_8UC3 );
     
 	//we sort boundRect according to size
-	cout<<"rectWithArea(sorted with area): "<<endl;
-	vector< vector<int> > rectWithArea(contours.size());
-
-	for (int i=0; i<boundRect.size(); i++){
+	cout<<"rectWithArea(sorted with area: "<<endl;
+	vector< vector<int> > rectWithArea;
+	
+/*	
+	for (int i=0; i<rectWithArea.size(); i++){
+				
 		rectWithArea[i][0]=boundRect[i].x;
 		rectWithArea[i][1]=boundRect[i].y;
 		rectWithArea[i][2]=boundRect[i].width;
 		rectWithArea[i][3]=boundRect[i].height;
 		rectWithArea[i][4]=(boundRect[i].width)*(boundRect[i].height);
-	}
-	sort(rectWithArea.begin(), rectWithArea.end(), comp);
-	
-	for (int i=0; i<rectWithArea.size(); i++){
 		cout<< "( " ;
 		cout<<rectWithArea[i][0]<<" , ";
 		cout<<rectWithArea[i][1]<< " , ";
@@ -170,22 +142,95 @@ void threshold1(Mat binary_src )//this draws bounding Rect
 		cout<<rectWithArea[i][4]<<" ) ";
 		cout<<endl;
 	}
+*/
 
-	vector<Rect> nineRects(9);
-	for (int i=0; i<9; i++){
-		nineRects[i].x=rectWithArea[i][0];
-		nineRects[i].y=rectWithArea[i][1];
-		nineRects[i].width=rectWithArea[i][2];
-		nineRects[i].height=rectWithArea[i][3];
-	}
+/*
+if you use the code above, you will have a segmentation fault, basically you are accessing memeory wrongly.
+THere are two main mistakes in the code above:
+(1):
+The reason is that when you declare a vector of anything, it does not contain anything yet. 
+Those rectWIthArea[i][0] or rectWIthArea[i][4] are not yet created. YOu need to use push_back to create them before accessing them with index!!
+(2): 
+Before accessing rectWithArea[i], remember that it is also not created yet! "vector< vector<int> > rectWithArea(boundRect.size());" will not allocate memory to the 2D vector!
 
-	for (int i=0; i<nineRects.size();i++){
-		Scalar color = Scalar( rng.uniform(0, 256), rng.uniform(0,256), rng.uniform(0,256) );
-		rectangle( drawing2, nineRects[i].tl(), nineRects[i].br(), color, 2 );
+The correct form is as below:
+
+*/
+	for (int i=0; i<boundRect.size(); i++){//note that here you cannot use rectWithArea.size(), it is not yet determined
+		vector<int> subVector;
+		rectWithArea.push_back(subVector);//you create rectWithArea[i]
+
+		rectWithArea[i].push_back(boundRect[i].x);
+		//you create rectWithArea[i][0], later you can access it with rectWithArea[i][0]
+		rectWithArea[i].push_back(boundRect[i].y);
+		rectWithArea[i].push_back(boundRect[i].width);
+		rectWithArea[i].push_back(boundRect[i].height);
+		rectWithArea[i].push_back((boundRect[i].width)*(boundRect[i].height));
+		cout<< "( " ;
+		cout<<rectWithArea[i][0]<<" , ";
+		cout<<rectWithArea[i][1]<<" , ";
+		cout<<rectWithArea[i][2]<<" , ";
+		cout<<rectWithArea[i][3]<<" , ";
+		cout<<rectWithArea[i][4]<<" ) ";
+		cout<<endl;
 	}
 	
+//sort rectWithArae
+	sort(rectWithArea.begin(), rectWithArea.end(), comp);
+
+	
+//elimitenate rects that are almost the same, make the redundant one all 0
+	for (int i=0; i<boundRect.size(); i++){//note that here you cannot use rectWithArea.size(), it is not yet determined
+		for (int j=i+1; j<boundRect.size() ; j++){
+		
+		if ( abs(rectWithArea[i][0]-rectWithArea[j][0]) +  abs(rectWithArea[i][1]-rectWithArea[j][1]) + abs(rectWithArea[i][2]-rectWithArea[j][2]) +abs(rectWithArea[i][3]-rectWithArea[j][3])  <10 ){
+			for (int k=0; k< 5; k++){
+				rectWithArea[j][k]=0;
+			}
+		}
+		
+		}
+	}
+
+//sort again
+	sort(rectWithArea.begin(), rectWithArea.end(), comp);
+	
+//draw the largest rectangels
+	for (int i=0; i<9; i++){
+/*
+		if (rectWithArea[i].size()==5){//why it works after this line???
+			cout<<i;
+			cout<< "( " ;
+			cout<<rectWithArea[i][0]<<" , ";
+			cout<<rectWithArea[i][1]<<" , ";
+			cout<<rectWithArea[i][2]<<" , ";
+			cout<<rectWithArea[i][3]<<" , ";
+			cout<<rectWithArea[i][4]<<" ) ";
+			cout<<endl;
+		}
+*/
+			cout<<i;
+			cout<< "( " ;
+			cout<<rectWithArea[i][0]<<" , ";
+			cout<<rectWithArea[i][1]<<" , ";
+			cout<<rectWithArea[i][2]<<" , ";
+			cout<<rectWithArea[i][3]<<" , ";
+			cout<<rectWithArea[i][4]<<" ) ";
+			cout<<endl;
+			
+			Rect temp;
+			temp.x=rectWithArea[i][0];
+			temp.y=rectWithArea[i][1];
+			temp.width=rectWithArea[i][2];
+			temp.height=rectWithArea[i][3];
+			Scalar color=Scalar(rng.uniform(0,255),rng.uniform(0,255),rng.uniform(0,255) );
+			rectangle( drawing2, temp.tl(), temp.br(), color, 2 );
+			
+	}
+	
+	namedWindow("9 squares", WINDOW_AUTOSIZE);
+	imshow( "9 squares", drawing2 );
+	cout<<"end"<<endl;
 }
 
-bool comp(const vector<int>& a, const vector<int>& b)  {
-	return (a[1]>b[1]);//sort in decending order
-}
+
