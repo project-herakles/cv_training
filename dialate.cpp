@@ -61,3 +61,27 @@ void mydilate(Mat &image, int rangeN){
     }
   }
 }
+
+
+
+void mydilate(Mat &image, int rangeN){
+  Mat copyImage;
+  image.copyTo(copyImage);
+  int range = rangeN*(-1);
+  int nl = image.rows;
+  int nc = image.cols;
+  for (int j=range; j<nl-range; j=j+1){
+    uchar* centerRow = copyImage.ptr<uchar>(j);
+      for (int i=range; i<nc-range; i=i+1){
+        if (centerRow[i]== 255){
+         vector<uchar*> r;
+         for (int m=rangeN; m<=range; m++)
+            r.push_back(image.ptr<uchar>(j+m));
+         for (int b=0; b<range*2; b++){
+           for (int a=rangeN; a<=range;a++)
+             r[b][i+a]=255;  
+         }
+      }
+    }
+  }
+}
