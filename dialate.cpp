@@ -16,3 +16,48 @@ void colorReduce(Mat &image){
     }
   }
 }
+
+
+#include <opencv2/highgui/highgui.hpp>    
+#include <opencv2/imgproc/imgproc.hpp>
+#include <vector>
+ 
+using namespace cv;
+using namespace std;
+
+void mydilate(Mat &image,int rangeN);
+
+int main(int argc, char *argv[])
+{
+
+	Mat image = imread(argv[1],IMREAD_COLOR);
+    
+    cvtColor(image, image, COLOR_RGB2GRAY); 
+        threshold(image, image, 130, 255, THRESH_BINARY);
+        imshow("d",image);
+	mydilate(image,-11);
+	imshow("w", image);
+	waitKey();
+	return 0;
+}
+
+
+void mydilate(Mat &image, int rangeN){
+  int range = rangeN*(-1);
+  int nl = image.rows;
+  int nc = image.cols;
+  for (int j=range; j<nl-range; j=j+range+1){
+    uchar* centerRow = image.ptr<uchar>(j);
+      for (int i=range; i<nc-range; i=i+range+1){
+        if (centerRow[i]== 255){
+         vector<uchar*> r;
+         for (int m=rangeN; m<=range; m++)
+            r.push_back(image.ptr<uchar>(j+m));
+         for (int b=0; b<range*2; b++){
+           for (int a=rangeN; a<=range;a++)
+             r[b][i+a]=255;  
+         }
+      }
+    }
+  }
+}
