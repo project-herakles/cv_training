@@ -68,22 +68,3 @@ bool compare (Rect rect1, Rect rect2){
   return (error <= 100? true:false) ;
 }
 
-1.rm myfile (touch mydir will not return wrong message but doesn't work)
-2.cp -t mydir myfile: cp -t copy all source arguments into directory
-cat<myfile>mydir/myfile is also ok
-3.ls|grep ab
-find . -name 'ab' is find the name exactly 'ab'
-4. cd~
-cd home/c1123
-cd ../../
-cd
-5. 1>output.txt 2>output.txt
->output.txt 2>&1
-f.ls -1 |wc -w or wc -l
--l will count more than one and -a is what?
-(a hard link of a file is 2 or more?)
-g. -lS
-h. only (ab)*(bc)*(cd) don't match
-i. c and d
-review diff part
-j. sort c|uniq -c
